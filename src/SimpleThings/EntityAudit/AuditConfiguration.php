@@ -24,6 +24,7 @@
 namespace SimpleThings\EntityAudit;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use SimpleThings\EntityAudit\Exception\ConfigurationException;
 
 class AuditConfiguration
 {
@@ -37,6 +38,7 @@ class AuditConfiguration
     private $revisionTypeFieldName = 'revtype';
     private $revisionIdFieldType = 'integer';
     private $usernameCallable;
+    private $retentionPeriodMonths = null;  // null = forever
 
     /**
      * @param array $classes
@@ -201,5 +203,22 @@ class AuditConfiguration
     public function getRevisionIdFieldType()
     {
         return $this->revisionIdFieldType;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getRetentionPeriodMonths()
+    {
+        return $this->retentionPeriodMonths;
+    }
+
+    /**
+     * @param int $retentionPeriodMonths
+     * @throws ConfigurationException
+     */
+    public function setRetentionPeriodMonths($retentionPeriodMonths)
+    {
+        $this->retentionPeriodMonths = AuditPurger::getValidPeriodValue($retentionPeriodMonths);
     }
 }
